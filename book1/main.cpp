@@ -4,8 +4,36 @@
 
 #include <iostream>
 
+bool hit_sphere(const point3 &center, double radius, const ray &r)
+{
+    vec3 oc = center - r.origin();
+    // vector from the ray's origin to the sphere's center
+    auto a = dot(r.direction(), r.direction());
+    // calculate the dot product of the ray's direction
+    // will be 1 if it's normalized (which it should be)
+    auto b = -2.0 * dot(r.direction(), oc);
+    // dot product of the ray direction and oc
+    // tells us how aligned the ray is with the vector to the sphere
+    // -2.0 = part of the quadratic formula
+    auto c = dot(oc, oc) - radius * radius;
+    // dot(oc,oc) = squared distance from the ray origin to the sphere center
+    // subtracting radius*radius gives us squared distance minus sphere squared radius
+    auto discriminant = b * b - 4 * a * c;
+    // discriminant > 0 = ray enters and exits
+    // discriminant = 0 = ray touches sphere exactly once
+    // discriminant < 0 = ray misses sphere completely
+    return (discriminant >= 0);
+    // return true if ray hits or touches, return false if we miss
+}
+
 color ray_color(const ray &r)
 {
+    if (hit_sphere(point3(0, 0, -1), 0.5, r))
+    {
+        // create a sphere with its center at (0,0,-1) and a 0.5 radius and an r ray
+        return color(1, 0, 0);
+    }
+
     vec3 unit_direction = unit_vector(r.direction()); // normalize ray direction
     // take direction of the ray and make it a unit vector (length of 1), just keeping the direction info
     auto a = 0.5 * (unit_direction.y() + 1.0); // direction.y gives us how much the ray is pointing up or down
