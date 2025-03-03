@@ -6,8 +6,12 @@
 
 color ray_color(const ray &r)
 {
-    return color(0, 0, 0);
-    // always black for now
+    vec3 unit_direction = unit_vector(r.direction()); // normalize ray direction
+    // take direction of the ray and make it a unit vector (length of 1), just keeping the direction info
+    auto a = 0.5 * (unit_direction.y() + 1.0); // direction.y gives us how much the ray is pointing up or down
+    // +1 = ray is straight up -1 = ray is straight down, a is a value from 0(looking down) to 1(looking up)
+    return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0); // 1,1,1 is white, the other is light blue
+    // when a is 0 we get 100% white, when it's 1 we get 100% light blue. for things in the middle we get a mix of the two
 }
 
 int main()
