@@ -8,17 +8,20 @@ double hit_sphere(const point3 &center, double radius, const ray &r)
 {
     vec3 oc = center - r.origin();
     // vector from the ray's origin to the sphere's center
-    auto a = dot(r.direction(), r.direction());
+    auto a = r.direction().length_squared();
     // calculate the dot product of the ray's direction
+    // a vector dotted with itself is the squared length of that vector
     // will be 1 if it's normalized (which it should be)
-    auto b = -2.0 * dot(r.direction(), oc);
+    // auto b = -2.0 * dot(r.direction(), oc);
     // dot product of the ray direction and oc
     // tells us how aligned the ray is with the vector to the sphere
     // -2.0 = part of the quadratic formula
-    auto c = dot(oc, oc) - radius * radius;
+    auto h = dot(r.direction(), oc);
+    // pretty much just half of b bc we wanna simplify the determinant
+    auto c = oc.length_squared() - radius * radius;
     // dot(oc,oc) = squared distance from the ray origin to the sphere center
     // subtracting radius*radius gives us squared distance minus sphere squared radius
-    auto discriminant = b * b - 4 * a * c;
+    auto discriminant = h * h - a * c;
     // discriminant > 0 = ray enters and exits
     // discriminant = 0 = ray touches sphere exactly once
     // discriminant < 0 = ray misses sphere completely
@@ -30,7 +33,7 @@ double hit_sphere(const point3 &center, double radius, const ray &r)
     }
     else
     {
-        return (-b - std::sqrt(discriminant)) / (2.0 * a);
+        return (h - std::sqrt(discriminant)) / a;
         // return the smaller intersection point, the first hit on the sphere
         // if first hit is negative the ray is behind the sphere, if positive it's in front
     }
