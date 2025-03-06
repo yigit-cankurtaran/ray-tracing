@@ -10,7 +10,7 @@ public:
     sphere(const point3 &center, double radius) : center(center), radius(std::fmax(0, radius)) {}
     // fmax (float max) ensures radius can never be negative, takes the maximum of 0 and entered radius
 
-    bool hit(const ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const override
+    bool hit(const ray &r, interval ray_t, hit_record &rec) const override
     {
         // vector from the ray's origin to the sphere's center
         vec3 oc = center - r.origin();
@@ -37,11 +37,11 @@ public:
 
         // root according to quadratic formula, h+-sqrtd / a, h instead of b/2 and a instead of 2a
         auto root = (h - sqrtd) / a;
-        if (root <= ray_tmin || ray_tmax <= root)
+        if (!ray_t.surrounds(root))
         // if root is outside our limits check again
         {
             root = (h + sqrtd) / a;
-            if (root <= ray_tmin || ray_tmax <= root)
+            if (!ray_t.surrounds(root))
                 // if neither root is in limits we don't have a hit / acceptable hit
                 return false;
         }

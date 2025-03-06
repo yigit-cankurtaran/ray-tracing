@@ -32,8 +32,8 @@ public:
     // virtual destructor that uses the default implementation
     virtual ~hittable() = default;
 
-    // ray r input, ray_tmin and ray_tmax are how far along the ray to check for hits, hit_record to fill with info if hit occurs
-    virtual bool hit(const ray &r, double ray_tmin, double ray_tmax, hit_record &rect) const = 0;
+    // ray r input, ray_t is part of the ray to check for hits, hit_record to fill with info if hit occurs
+    virtual bool hit(const ray &r, interval ray_t, hit_record &rect) const = 0;
     // pure virtual function, no implementation in this class, functions that inherit must implement.
 };
 
