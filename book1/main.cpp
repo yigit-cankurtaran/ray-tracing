@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-bool hit_sphere(const point3 &center, double radius, const ray &r)
+double hit_sphere(const point3 &center, double radius, const ray &r)
 {
     vec3 oc = center - r.origin();
     // vector from the ray's origin to the sphere's center
@@ -22,16 +22,27 @@ bool hit_sphere(const point3 &center, double radius, const ray &r)
     // discriminant > 0 = ray enters and exits
     // discriminant = 0 = ray touches sphere exactly once
     // discriminant < 0 = ray misses sphere completely
-    return (discriminant >= 0);
-    // return true if ray hits or touches, return false if we miss
+
+    if (discriminant < 0)
+    {
+        return -1.0;
+        // no hit
+    }
+    else
+    {
+        return (-b - std::sqrt(discriminant)) / (2.0 * a);
+        // return the smaller intersection point, the first hit on the sphere
+        // if first hit is negative the ray is behind the sphere, if positive it's in front
+    }
 }
 
 color ray_color(const ray &r)
 {
-    if (hit_sphere(point3(0, 0, -1), 0.5, r))
+    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
+    if (t > 0.0)
     {
-        // create a sphere with its center at (0,0,-1) and a 0.5 radius and an r ray
-        return color(1, 0, 0);
+        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
+        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
     }
 
     vec3 unit_direction = unit_vector(r.direction()); // normalize ray direction
@@ -87,8 +98,6 @@ int main()
     { // every pixel in height
         std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::endl;
         // clog = character log, flush to update in real time
-        // doesn't display too often because it's buffered
-        // book uses std::flush but i'll use endl
         for (int i = 0; i < image_width; i++)
         { // every pixel in width
             auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
