@@ -6,25 +6,27 @@
 
 double hit_sphere(const point3 &center, double radius, const ray &r)
 {
-    vec3 oc = center - r.origin();
     // vector from the ray's origin to the sphere's center
-    auto a = r.direction().length_squared();
+    vec3 oc = center - r.origin();
     // calculate the dot product of the ray's direction
+    auto a = r.direction().length_squared();
     // a vector dotted with itself is the squared length of that vector
     // will be 1 if it's normalized (which it should be)
+
     // auto b = -2.0 * dot(r.direction(), oc);
     // dot product of the ray direction and oc
     // tells us how aligned the ray is with the vector to the sphere
     // -2.0 = part of the quadratic formula
-    auto h = dot(r.direction(), oc);
+
     // pretty much just half of b bc we wanna simplify the determinant
-    auto c = oc.length_squared() - radius * radius;
+    auto h = dot(r.direction(), oc);
     // dot(oc,oc) = squared distance from the ray origin to the sphere center
     // subtracting radius*radius gives us squared distance minus sphere squared radius
-    auto discriminant = h * h - a * c;
+    auto c = oc.length_squared() - radius * radius;
     // discriminant > 0 = ray enters and exits
     // discriminant = 0 = ray touches sphere exactly once
     // discriminant < 0 = ray misses sphere completely
+    auto discriminant = h * h - a * c;
 
     if (discriminant < 0)
     {
@@ -50,8 +52,10 @@ color ray_color(const ray &r)
 
     vec3 unit_direction = unit_vector(r.direction()); // normalize ray direction
     // take direction of the ray and make it a unit vector (length of 1), just keeping the direction info
+
     auto a = 0.5 * (unit_direction.y() + 1.0); // direction.y gives us how much the ray is pointing up or down
     // +1 = ray is straight up -1 = ray is straight down, a is a value from 0(looking down) to 1(looking up)
+
     return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0); // 1,1,1 is white, the other is light blue
     // when a is 0 we get 100% white, when it's 1 we get 100% light blue. for things in the middle we get a mix of the two
 }
@@ -103,11 +107,11 @@ int main()
         // clog = character log, flush to update in real time
         for (int i = 0; i < image_width; i++)
         { // every pixel in width
-            auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
             // calculate each pixel's center's position in 3d space
-            auto ray_direction = pixel_center - camera_center;
+            auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
             // creating a vector (ray) pointing from the camera to the pixel center
-            ray r(camera_center, ray_direction); // create the ray starting from the camera and pointing through the current pixel
+            auto ray_direction = pixel_center - camera_center;
+            ray r(camera_center, ray_direction); // the ray starting from the camera and pointing through the current pixel
 
             color pixel_color = ray_color(r);    // what color the ray "sees"
             write_color(std::cout, pixel_color); // output that color to an image
