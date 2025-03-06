@@ -17,16 +17,22 @@ public:
         std::cout << "P3\n"
                   << image_width << ' ' << image_height << "\n255\n";
 
-        for (int j = 0; j < image_height; j++)
+        for (int j = 0; j < image_height; j++) // for every pixel in height
         {
+            // going left-right-up-down, every pixel in height is a scanline
             std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::endl;
-            for (int i = 0; i < image_width; i++)
+            for (int i = 0; i < image_width; i++) // for every pixel in width
             {
+                // center of pixel in 3d space
                 auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
+                // the direction the ray will be shot in
                 auto ray_direction = pixel_center - center;
+                // ray from camera to pixel center
                 ray r(center, ray_direction);
 
+                // what color the ray sees
                 color pixel_color = ray_color(r, world);
+                // output that color
                 write_color(std::cout, pixel_color);
             }
         }
@@ -57,14 +63,16 @@ private:
         auto viewport_u = vec3(viewport_width, 0, 0);
         auto viewport_v = vec3(0, -viewport_height, 0);
 
-        // calculate horizontal and vertical delta vectors
+        // horizontal and vertical delta vectors
 
         pixel_delta_u = viewport_u / image_width;
         pixel_delta_v = viewport_v / image_height;
 
         // calculate upper left pixel
 
+        // start at center, move forward by focal length (distance to virtual screen), move left and up
         auto viewport_upper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
+        // start at viewport upper left corner, move inward by half a pixel in both directions, center of first pixel
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     }
 
