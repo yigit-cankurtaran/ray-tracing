@@ -1,7 +1,7 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-#include "ray.h"
+// the following errors are fine because we import rtweekend on main
 
 // storing information about hits
 class hit_record

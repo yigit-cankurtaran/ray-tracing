@@ -1,53 +1,17 @@
-#include "color.h"
-#include "vec.h"
-#include "ray.h"
+#include "rtweekend.h"
 
-#include <iostream>
+#include "hittable.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
-double hit_sphere(const point3 &center, double radius, const ray &r)
+color ray_color(const ray &r, const hittable &world)
 {
-    // vector from the ray's origin to the sphere's center
-    vec3 oc = center - r.origin();
-    // calculate the dot product of the ray's direction
-    auto a = r.direction().length_squared();
-    // a vector dotted with itself is the squared length of that vector
-    // will be 1 if it's normalized (which it should be)
-
-    // auto b = -2.0 * dot(r.direction(), oc);
-    // dot product of the ray direction and oc
-    // tells us how aligned the ray is with the vector to the sphere
-    // -2.0 = part of the quadratic formula
-
-    // pretty much just half of b bc we wanna simplify the determinant
-    auto h = dot(r.direction(), oc);
-    // dot(oc,oc) = squared distance from the ray origin to the sphere center
-    // subtracting radius*radius gives us squared distance minus sphere squared radius
-    auto c = oc.length_squared() - radius * radius;
-    // discriminant > 0 = ray enters and exits
-    // discriminant = 0 = ray touches sphere exactly once
-    // discriminant < 0 = ray misses sphere completely
-    auto discriminant = h * h - a * c;
-
-    if (discriminant < 0)
+    hit_record rec;
+    if (world.hit(r, 0, infinity, rec))
     {
-        return -1.0;
-        // no hit
-    }
-    else
-    {
-        return (h - std::sqrt(discriminant)) / a;
-        // return the smaller intersection point, the first hit on the sphere
-        // if first hit is negative the ray is behind the sphere, if positive it's in front
-    }
-}
-
-color ray_color(const ray &r)
-{
-    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
-    if (t > 0.0)
-    {
-        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
-        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+        return 0.5 * (rec.normal + color(1, 1, 1));
+        // 0.5 is used to create shading
+        // rec.normal and the color is used to create different colors
     }
 
     vec3 unit_direction = unit_vector(r.direction()); // normalize ray direction
@@ -69,6 +33,13 @@ int main()
     // calculate image height, make sure it's always at least 1
     int image_height = int(image_width / aspect_ratio);
     image_height = (image_height < 1) ? 1 : image_height;
+
+    // world
+    hittable_list world;
+    // center sphere
+    world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
+    // background (bottom green) sphere
+    world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
 
     // camera
 
@@ -113,8 +84,8 @@ int main()
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction); // the ray starting from the camera and pointing through the current pixel
 
-            color pixel_color = ray_color(r);    // what color the ray "sees"
-            write_color(std::cout, pixel_color); // output that color to an image
+            color pixel_color = ray_color(r, world); // what color the ray "sees", all objects hit
+            write_color(std::cout, pixel_color);     // output that color to an image
         }
     }
 

@@ -1,13 +1,11 @@
 #ifndef HITTABLE_LIST_H
 #define HITTABLE_LIST_H
 
+// the following errors are fine because we import rtweekend on main
+
 #include "hittable.h"
 
-#include <memory>
 #include <vector>
-
-using std::make_shared;
-using std::shared_ptr;
 
 class hittable_list : public hittable
 {

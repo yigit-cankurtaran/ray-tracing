@@ -4,9 +4,6 @@
 #ifndef VEC3_H // if VEC3_H is not defined
 #define VEC3_H // start defining the macro
 
-#include <cmath> // math.h from C
-#include <iostream>
-
 class vec3
 {
 public:

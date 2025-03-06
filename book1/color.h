@@ -2,7 +2,6 @@
 #define COLOR_H
 
 #include "vec.h"
-#include <iostream>
 
 using color = vec3;
 // colors as 3d vectors, x=red y=green z=blue
