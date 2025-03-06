@@ -53,8 +53,10 @@ public:
         rec.t = root;
         // the hit point on the sphere's surface
         rec.p = r.at(rec.t);
-        // vector from the sphere center to the hit point / radius to normalize
-        rec.normal = (rec.p - center) / radius;
+        // vector from the sphere center to the hit point (/ radius to normalize)
+        vec3 outward_normal = (rec.p - center) / radius;
+        // the ray, the outward normal (unit length)
+        rec.set_face_normal(r, outward_normal);
 
         // we have a hit
         return true;
