@@ -7,7 +7,9 @@
 class sphere : public hittable
 {
 public:
+    // point3 for sphere center, double for sphere radius
     sphere(const point3 &center, double radius) : center(center), radius(std::fmax(0, radius)) {}
+    // fmax (float max) ensures radius can never be negative, takes the maximum of 0 and entered radius
 
     bool hit(const ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const override
     {
@@ -59,6 +61,8 @@ public:
     }
 
 private:
+    // private vars for encapsulation
+    // we can't modify these directly but we can create a sphere with these
     point3 center;
     double radius;
 };
