@@ -16,7 +16,8 @@ public:
     std::vector<shared_ptr<hittable>> objects;
     // shared_ptr is a smart pointer that:
     // automatically manages memory,
-    // can be shared by multiple parts of the code
+    // has a reference counter, every time they go out of scope they get decremented, once object hits 0 it's safely deleted
+    // can be shared by multiple parts of the code,
     // is safer than raw pointers
 
     // constructors, top one is for the empty and the bottom one is if we pass in something
