@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include "hittable.h"
+#include "material.h"
 
 class camera
 {
@@ -115,12 +116,15 @@ private:
         // this fixes "shadow acne" problem (dark spots or stripes on lit surfaces)
         if (world.hit(r, interval(0.001, infinity), rec))
         {
-            // surface normal from hit record, with a random unit vector for lambertian reflection
-            // biased towards the normal direction, has some randomness for diffuse reflection
-            vec3 direction = rec.normal + random_unit_vector();
-            // 0.5 is used to create shading, we want 50% of the color from a bounce
-            // every bounce takes 1 away from depth
-            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+            ray scattered;     // new direction after scattering
+            color attenuation; // how much the ray's color is reduced by material
+            // we use arrow notation bc mat is a pointer
+            if (rec.mat->scatter(r, rec, attenuation, scattered))
+                // if ray has been scattered by material
+                // calculate recursively by calling ray color on scattered ray
+                // depth - 1 to limit recursion
+                return attenuation * ray_color(scattered, depth - 1, world);
+            return color(0, 0, 0); // if no scattering return 0
         }
 
         vec3 unit_direction = unit_vector(r.direction()); // normalize ray direction

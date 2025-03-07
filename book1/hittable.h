@@ -1,7 +1,7 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-// the following errors are fine because we import rtweekend on main
+class material;
 
 // storing information about hits
 class hit_record
@@ -9,6 +9,7 @@ class hit_record
 public:
     point3 p;
     vec3 normal;
+    shared_ptr<material> mat;
     double t;
     bool front_face;
 
