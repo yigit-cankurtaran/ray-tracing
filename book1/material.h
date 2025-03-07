@@ -42,18 +42,25 @@ private:
 class metal : public material
 {
 public:
-    metal(const color &albedo) : albedo(albedo) {}
+    metal(const color &albedo, double fuzz) : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
 
     bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const override
     {
+        // reflection of the incoming ray's direction off the surface normal
         vec3 reflected = reflect(r_in.direction(), rec.normal);
+        // add the fuzziness factor to the reflection, simulating a rough surface
+        reflected = unit_vector(reflected) + (fuzz * random_unit_vector());
+        // create a new ray that originates from the hit point in the direction of reflected
         scattered = ray(rec.p, reflected);
+        // color reflection is the albedo
         attenuation = albedo;
-        return true;
+        // return true if the ray is scattered away from the surface, otherwise false (ray's absorbed)
+        return (dot(scattered.direction(), rec.normal) > 0);
     }
 
 private:
-    color albedo;
+    color albedo; // reflection
+    double fuzz;  // fuzziness factor, kinda like distortion
 };
 
 #endif
