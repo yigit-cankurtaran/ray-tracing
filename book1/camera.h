@@ -24,12 +24,17 @@ public:
             std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::endl;
             for (int i = 0; i < image_width; i++) // for every pixel in width
             {
-                color pixel_color(0, 0, 0);
+                color pixel_color(0, 0, 0); // initialized to black
+
+                // multiple samples for the pixel
                 for (int sample = 0; sample < samples_per_pixel; sample++)
                 {
+                    // ray for this sample
                     ray r = get_ray(i, j);
+                    // the color the ray sees to our running sum
                     pixel_color += ray_color(r, world);
                 }
+                // average all samples by multiplying by 1/samples_per_pixel
                 write_color(std::cout, pixel_samples_scale * pixel_color);
             }
         }
@@ -79,11 +84,14 @@ private:
     // make a camera ray originating from the origin and directed at a sampled point around the pixel i,j
     ray get_ray(int i, int j) const
     {
-
+        // random offset within the pixel
         auto offset = sample_square();
 
+        // exact point to shoot rays through, starts at top left pixel, move right by i + random offset, move down by j + random offset
         auto pixel_sample = pixel00_loc + ((i + offset.x()) * pixel_delta_u) + ((j + offset.y()) * pixel_delta_v);
+        // ray starts at camera center
         auto ray_origin = center;
+        // ray points from camera to sampled point
         auto ray_direction = pixel_sample - ray_origin;
 
         return ray(ray_origin, ray_direction);
