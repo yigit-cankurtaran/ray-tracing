@@ -1,6 +1,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include "interval.h"
 #include "vec.h"
 
 using color = vec3;
@@ -12,12 +13,12 @@ void write_color(std::ostream &out, const color &pixel_color)
     auto g = pixel_color.y();
     auto b = pixel_color.z();
 
+    static const interval intensity(0.000, 0.999);
     // translating the [0, 1] component values to the byte range [0, 255]
-    int rbyte = int(255.999 * r); // 255.999 is a trick to make sure we avoid rounding errors
-    // when we use this for colors we'll pass in vals between 0-1 (by intensity)
-    // but ppm and such want 8 bits of num values (up to 255) so we multiply by 255
-    int gbyte = int(255.999 * g);
-    int bbyte = int(255.999 * b);
+    int rbyte = int(256 * intensity.clamp(r));
+    // ppm and such want 8 bits of num values (up to 255) so we multiply by 256 and clamped r
+    int gbyte = int(256 * intensity.clamp(g));
+    int bbyte = int(256 * intensity.clamp(b));
 
     // write out the color componnets
 
