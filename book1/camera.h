@@ -110,12 +110,14 @@ private:
         if (depth <= 0)
             return color(0, 0, 0);
         hit_record rec;
+
         // ignoring hits close to the calculated intersection point
         // this fixes "shadow acne" problem (dark spots or stripes on lit surfaces)
         if (world.hit(r, interval(0.001, infinity), rec))
         {
-            // surface normal from hit record
-            vec3 direction = random_on_hemisphere(rec.normal);
+            // surface normal from hit record, with a random unit vector for lambertian reflection
+            // biased towards the normal direction, has some randomness for diffuse reflection
+            vec3 direction = rec.normal + random_unit_vector();
             // 0.5 is used to create shading, we want 50% of the color from a bounce
             // every bounce takes 1 away from depth
             return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
