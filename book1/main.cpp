@@ -18,6 +18,7 @@ int main()
     cam.image_width = 400;
     // handling anti-aliasing through multiple samples per pixel
     cam.samples_per_pixel = 100;
+    cam.max_depth = 20;
 
     cam.render(world);
 }
