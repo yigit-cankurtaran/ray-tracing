@@ -7,11 +7,22 @@
 using color = vec3;
 // colors as 3d vectors, x=red y=green z=blue
 
+inline double linear_to_gamma(double linear_component)
+{
+    if (linear_component > 0)
+        return std::sqrt(linear_component);
+    return 0;
+}
+
 void write_color(std::ostream &out, const color &pixel_color)
 {
     auto r = pixel_color.x();
     auto g = pixel_color.y();
     auto b = pixel_color.z();
+
+    r = linear_to_gamma(r);
+    g = linear_to_gamma(g);
+    b = linear_to_gamma(b);
 
     static const interval intensity(0.000, 0.999);
     // translating the [0, 1] component values to the byte range [0, 255]
