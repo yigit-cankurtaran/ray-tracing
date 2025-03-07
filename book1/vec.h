@@ -66,6 +66,15 @@ public:
     // we have both because for comparisons we can use length_squared
     // sqrt is computationally expensive
 
+    static vec3 random()
+    {
+        return vec3(random_double(), random_double(), random_double());
+    }
+    static vec3 random(double min, double max)
+    {
+        return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
+
 }; // don't forget the semicolon!
 
 using point3 = vec3;
@@ -129,6 +138,34 @@ inline vec3 cross(const vec3 &u, const vec3 &v) // cross product
 inline vec3 unit_vector(const vec3 &v)
 {
     return v / v.length();
+}
+
+// we need this for diffuse (matte) reflection
+// when rays hit a matte surface they bounce off in random directions
+inline vec3 random_unit_vector()
+{
+    while (true)
+    {
+        auto p = vec3::random(-1, 1);    // random vector with components between -1 and 1
+        auto lensq = p.length_squared(); // squared length of p
+        // if vector is inside sphere (but not too close to zero)
+        if (1e-160 < lensq && lensq <= 1)
+            // normalize vector to make it exactly length 1
+            return p / sqrt(lensq);
+    }
+}
+
+// dot product of the surface normal and the random vector for hemisphere detection
+// if the dot product is positive the vector is correct, if not we need to invert it
+// we only want diffuse reflection on outside surfaces
+inline vec3 random_on_hemisphere(const vec3 &normal)
+{
+    vec3 on_unit_sphere = random_unit_vector();
+    // checking if it points in the same direction, dot product is about alignment
+    if (dot(on_unit_sphere, normal) > 0.0)
+        return on_unit_sphere;
+    else
+        return -on_unit_sphere;
 }
 
 #endif // end the ifndef block

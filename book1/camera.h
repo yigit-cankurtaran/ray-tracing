@@ -108,9 +108,10 @@ private:
         hit_record rec;
         if (world.hit(r, interval(0, infinity), rec))
         {
-            return 0.5 * (rec.normal + color(1, 1, 1));
-            // 0.5 is used to create shading
-            // rec.normal and the color is used to create different colors
+            // surface normal from hit record
+            vec3 direction = random_on_hemisphere(rec.normal);
+            // 0.5 is used to create shading, we want 50% of the color from a bounce
+            return 0.5 * ray_color(ray(rec.p, direction), world);
         }
 
         vec3 unit_direction = unit_vector(r.direction()); // normalize ray direction
