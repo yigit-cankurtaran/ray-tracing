@@ -181,4 +181,19 @@ inline vec3 reflect(const vec3 &v, const vec3 &n)
     return v - 2 * dot(v, n) * n;
 }
 
+// uv = incoming unit vector (direction of the ray), n = normal vector (where refraction occurs)
+// etai_over_etat = ratio of the indices of refraction of the two media the ray is in
+inline vec3 refract(const vec3 &uv, const vec3 &n, double etai_over_etat)
+{
+    // cosine of the incoming vector and the surface normal
+    auto cos_theta = std::fmin(dot(-uv, n), 1.0);
+
+    // perpendicular component of the refracted ray (part of the ray bent by the surface)
+    vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+    // parallel component of the refracted ray (part of the ray that remains parallel to the surface)
+    vec3 r_out_parallel = -std::sqrt(std::fabs(1.0 - r_out_perp.length_squared())) * n;
+    // sum of perpendicular and parallel components, final direction of the refracted ray
+    return r_out_perp + r_out_parallel;
+}
+
 #endif // end the ifndef block

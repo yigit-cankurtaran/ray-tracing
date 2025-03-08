@@ -63,4 +63,31 @@ private:
     double fuzz;  // fuzziness factor, kinda like distortion
 };
 
+// clear materials such as water, glass, diamond etc.
+// when rays hit them, it splits into a reflected and a refracted (transmitted) ray
+class dielectric : public material
+{
+public:
+    dielectric(double refraction_index) : refraction_index(refraction_index) {}
+
+    bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const override
+    {
+        attenuation = color(1.0, 1.0, 1.0);
+
+        // if front face this needs to be divided bc it's crossing over to the dielectric
+        // if back face this is the refraction index bc it's crossing over to the surrounding materials
+        double ri = rec.front_face ? (1.0 / refraction_index) : refraction_index;
+
+        vec3 unit_direction = unit_vector(r_in.direction());
+        vec3 refracted = refract(unit_direction, rec.normal, ri);
+
+        scattered = ray(rec.p, refracted);
+        return true;
+    }
+
+private:
+    // refractive index in vacuum or air, or the ratio of the two media the ray goes through
+    double refraction_index;
+};
+
 #endif
