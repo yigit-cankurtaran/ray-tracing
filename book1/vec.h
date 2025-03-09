@@ -133,14 +133,13 @@ inline double dot(const vec3 &u, const vec3 &v) // dot product
     // calculate a scalar from 2 vectors by multiplying their corresponding components
 }
 
-inline vec3 cross(const vec3 &u, const vec3 &v) // cross product
+// cross product (a new vector perpendicular to both input vectors)
+inline vec3 cross(const vec3 &u, const vec3 &v)
 {
     return vec3(u.e[1] * v.e[2] - u.e[2] * v.e[1],
                 u.e[2] * v.e[0] - u.e[0] * v.e[2],
                 u.e[0] * v.e[1] - u.e[1] * v.e[0]);
     // first element has 2nd and 3rd elements, 2nd has 1st and 3rd, 3rd has 1st and second elements
-
-    // produce a new vector perpendicular to both input vectors
 }
 
 inline vec3 unit_vector(const vec3 &v)
