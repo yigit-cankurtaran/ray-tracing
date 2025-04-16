@@ -1,0 +1,15 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++14",
+      "-o",
+      "main",
+      "main.cpp"
+    ],
+    "directory": "/Users/yigit/cpp-ray-tracing-books/book1",
+    "file": "/Users/yigit/cpp-ray-tracing-books/book1/main.cpp",
+    "output": "/Users/yigit/cpp-ray-tracing-books/book1/main"
+  }
+]
